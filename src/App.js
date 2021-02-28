@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import Header from './common/header'
+import store from './store'
+import { Provider } from 'react-redux'
 
 class App extends Component {
   constructor(props) {
@@ -9,7 +11,9 @@ class App extends Component {
   render() { 
     return ( 
       <div>
-        <Header/>
+        <Provider store = {store}>
+          <Header/>
+        </Provider>
       </div>  
     );
   }
