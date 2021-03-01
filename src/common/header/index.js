@@ -20,6 +20,7 @@ import {
 
 class Header extends Component {
   render() {
+    const { focused, handleInputFocus, handleInputBlur, list } = this.props
     return ( 
       <div>
         <HeaderWrapper>
@@ -33,18 +34,18 @@ class Header extends Component {
             </NavItem>
             <SearchWrapper>
               <CSSTransition
-                in = {this.props.focused}
+                in = {focused}
                 timeout = {200}  
                 classNames = "slide"
               >
                 <NavSearch
-                  className = {this.props.focused ? 'focused': ''}
-                  onFocus = {this.props.handleInputFocus}
-                  onBlur = {this.props.handleInputBlur}
+                  className = {focused ? 'focused': ''}
+                  onFocus = {() => handleInputFocus(list)}
+                  onBlur = {handleInputBlur}
                 >
                 </NavSearch>
               </CSSTransition>
-              <span className = {this.props.focused ? 'focused iconfont': 'iconfont'}>&#xe6e0;</span>
+              <span className = {focused ? 'focused iconfont zoom': 'iconfont zoom'}>&#xe6e0;</span>
               {this.getListArea()}
             </SearchWrapper>
           </Nav>
@@ -60,26 +61,33 @@ class Header extends Component {
   }
 
   getListArea (){
-    if (this.props.focused) {
+    const { focused, mouseIn, list, page, totalPage, handleMouseEnter, handleMouseLeave, handleChangePage, } = this.props
+    const newList = list.toJS()
+    const pageList = []
+
+    if(newList.length) {
+      for(let i = ((page - 1) * 10); i< (page * 10); i++) {
+        pageList.push(
+          <SearchInfoItem key={newList[i]}>{newList[i]}</SearchInfoItem>
+        )
+      }
+    }
+
+    if (focused || mouseIn) {
       return (
-        <SearchInfo>
+        <SearchInfo 
+          onMouseEnter = { handleMouseEnter }
+          onMouseLeave = { handleMouseLeave }
+        >
           <SearchInfoTitle>
             热门搜索
-            <SearchInfoSwitch>换一批</SearchInfoSwitch>
+            <SearchInfoSwitch onClick={() => handleChangePage(page, totalPage, this.spinIcon)}>
+              <span className='iconfont spin' ref={icon => {this.spinIcon = icon}}>&#xe6dc;</span>
+              换一批
+            </SearchInfoSwitch>
           </SearchInfoTitle>
           <SearchInfoList>
-            {
-              this.props.list.map((item, index) => {
-                return(
-                  <SearchInfoItem key={index}>{item}</SearchInfoItem>
-                )
-              })
-            }
-            {/* <SearchInfoItem>教育</SearchInfoItem>
-            <SearchInfoItem>教育</SearchInfoItem>
-            <SearchInfoItem>教育</SearchInfoItem>
-            <SearchInfoItem>教育</SearchInfoItem>
-            <SearchInfoItem>教育</SearchInfoItem> */}
+            { pageList }
           </SearchInfoList>
         </SearchInfo>
       )
@@ -94,18 +102,44 @@ class Header extends Component {
 const mapStateToProps = (state) => {
   return {
     focused: state.getIn(['header','focused']),
-    list: state.getIn(['header','list'])
+    list: state.getIn(['header','list']),
+    page: state.getIn(['header','page']),
+    totalPage: state.getIn(['header','totalPage']),
+    mouseIn: state.getIn(['header','mouseIn'])
   }
 }
 
 const mapDispathToProps = (dispatch) => {
   return {
-    handleInputFocus() {
+    handleInputFocus(list) {
+      if(!list.size) {
+        dispatch(actionCreators.getList())
+      }
       dispatch(actionCreators.searchFocus())
-      dispatch(actionCreators.getList())
     },
     handleInputBlur() {
       dispatch(actionCreators.searchBlur())
+    },
+    handleMouseEnter() {
+      dispatch(actionCreators.mouseEnter())
+    },
+    handleMouseLeave() {
+      dispatch(actionCreators.mouseLeave())
+    },
+    handleChangePage(page, totalPage, spin) {
+      let originAngle = spin.style.transform.replace(/[^0-9]/ig,'')
+      if (originAngle) {
+        originAngle = parseInt(originAngle, 10)
+      }else {
+        originAngle = 0
+      }
+      spin.style.transform = `rotate(${originAngle+360}deg)`
+      if (page < totalPage) {
+        dispatch(actionCreators.changePage(page + 1))
+      } else {
+        dispatch(actionCreators.changePage(1))
+      }
+      
     }
   }
 }
