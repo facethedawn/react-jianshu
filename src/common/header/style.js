@@ -66,6 +66,7 @@ export const SearchInfo = styled.div`
   /* height: 200px; */
   padding: 0 20px;
   box-shadow: 0 0 8px rgba(0, 0, 0, .2);
+  background-color: #fff;
 `
 
 export const SearchInfoTitle = styled.div`
