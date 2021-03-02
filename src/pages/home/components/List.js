@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
+import { actionCreators } from '../store'
 import {
   ListItem,
-  ListInfo
+  ListInfo,
+  LoadMore
 } from '../style'
 
 class List extends Component {
@@ -11,12 +13,13 @@ class List extends Component {
     this.state = {  }
   }
   render() { 
+    const { articleList, getMoreList, articlePage } = this.props
     return (
       <div>
         {
-          this.props.articleList.map(item => {
+          articleList.map((item, index) => {
             return (
-              <ListItem key={item.get('id')}>
+              <ListItem key={index}>
                 <img src={item.get('imgUrl')} alt="" className='pic'/>
                 <ListInfo>
                   <h3 className='title'>{item.get('title')}</h3>
@@ -26,13 +29,7 @@ class List extends Component {
             )
           })
         }
-        {/* <ListItem>
-          <img src="https://www.soundws.com/img/footerBg.63437b70.png" alt="" className='pic'/>
-          <ListInfo>
-            <h3 className='title'>百万字日更完成后，是什么感觉呢</h3>
-            <p className='desc'>没感觉。 感觉水平差的还很远。 比起码字狂人来说，简直不算不什么。 但对于我们每天最多写千把字的写手来说，百万字的确是一个里碑的意义转折点。 前...</p>
-          </ListInfo>
-        </ListItem> */}
+        <LoadMore onClick={() => getMoreList(articlePage)}>加载更多</LoadMore>
       </div> 
     );
   }
@@ -40,8 +37,17 @@ class List extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    articleList: state.getIn(['home', 'articleList'])
+    articleList: state.getIn(['home', 'articleList']),
+    articlePage: state.getIn(['home','articlePage'])
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    getMoreList(articlePage){
+      dispatch(actionCreators.getMoreList(articlePage))
+    }
   }
 }
  
-export default connect(mapStateToProps, null)(List);
+export default connect(mapStateToProps, mapDispatchToProps)(List);
