@@ -1,4 +1,9 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import {
+  RecommendWrapper,
+  RecommendItem
+} from '../style'
 
 class Recommend extends Component {
   constructor(props) {
@@ -7,9 +12,26 @@ class Recommend extends Component {
   }
   render() { 
     return ( 
-      <div>Recommend</div>  
+      <RecommendWrapper>
+        {
+          this.props.recommendList.map(item => {
+            return(
+              <RecommendItem imgUrl={item.get('imgUrl')} key={item.get('id')}>
+              </RecommendItem>
+            )
+          })
+        }
+        {/* <RecommendItem imgUrl='https://www.soundws.com/img/footerBg.63437b70.png'>
+        </RecommendItem> */}
+      </RecommendWrapper>
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    recommendList: state.getIn(['home','recommendList'])
+  }
+}
  
-export default Recommend;
+export default connect(mapStateToProps, null)(Recommend);
