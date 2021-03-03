@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import List from './components/List'
 import Recommend from './components/Recommend'
 import Topic from './components/Topic'
@@ -8,10 +8,11 @@ import { actionCreators } from './store'
 import {
   HomeWrapper,
   HomeLeft,
-  HomeRight
+  HomeRight,
+  BackTop
 } from './style'
 
-class Home extends Component {
+class Home extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {  }
@@ -28,13 +29,27 @@ class Home extends Component {
           <Recommend />
           <Writer />
         </HomeRight>
+        <BackTop onClick={ this.scrollTop }>top</BackTop>
       </HomeWrapper>
     );
+  }
+
+  scrollTop() {
+    let val = document.documentElement.scrollTop || document.body.scrollTop
+
+    let timer = setInterval(()=> {
+      window.scrollTo(0, val-=20)
+      if(val <= 0) {
+        clearInterval(timer)
+      }
+    }, 8)
   }
 
   componentDidMount() {
     this.props.changeHomeData()
   }
+
+  
 }
 
 const mapDispatchToProps = dispatch => ({

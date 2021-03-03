@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import { actionCreators } from '../store'
+import { Link } from 'react-router-dom'
 import {
   ListItem,
   ListInfo,
@@ -19,13 +20,15 @@ class List extends Component {
         {
           articleList.map((item, index) => {
             return (
-              <ListItem key={index}>
-                <img src={item.get('imgUrl')} alt="" className='pic'/>
-                <ListInfo>
-                  <h3 className='title'>{item.get('title')}</h3>
-                  <p className='desc'>{item.get('desc')}</p>
-                </ListInfo>
-              </ListItem>
+              <Link key={index} to='/detail'>
+                <ListItem>
+                  <img src={item.get('imgUrl')} alt="" className='pic'/>
+                  <ListInfo>
+                    <h3 className='title'>{item.get('title')}</h3>
+                    <p className='desc'>{item.get('desc')}</p>
+                  </ListInfo>
+                </ListItem>
+              </Link>
             )
           })
         }
